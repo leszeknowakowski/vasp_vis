@@ -288,14 +288,6 @@ class MyMainWindow(MainWindow):
         self.plane_height_range_slider.setBackgroundStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);')
         self.plane_height_range_slider.handle.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);')
 
-        self.plane_heigth_slider = QtWidgets.QSlider(self.frame)
-        self.plane_heigth_slider.setOrientation(QtCore.Qt.Horizontal)
-        self.plane_heigth_slider.setMinimum(0)
-        self.plane_heigth_slider.setMaximum(int(self.z) * 100)
-        self.plane_heigth_slider.setValue(int(self.z / 2) * 100)
-        self.plane_heigth_slider.setFixedWidth(200)
-
-        self.plane_height_label = QtWidgets.QLabel('plane height')
 
         self.plane_opacity_slider = QtWidgets.QSlider(self.frame)
         self.plane_opacity_slider.setOrientation(QtCore.Qt.Horizontal)
@@ -379,7 +371,6 @@ class MyMainWindow(MainWindow):
         unit_cell_cb.stateChanged.connect(self.toggle_unit_cell)
         self.constrains_cb.stateChanged.connect(self.toggle_constrain_above_plane)
         self.constrains_all_cb.stateChanged.connect(self.toggle_constrain)
-        self.plane_heigth_slider.valueChanged.connect(self.toggle_mag_above_plane)
         self.mag_cb.stateChanged.connect(self.toggle_mag_above_plane)
         numbers_cb.stateChanged.connect(self.toggle_symbols)
         bonds_cb.stateChanged.connect(self.toogle_bonds)
@@ -396,8 +387,6 @@ class MyMainWindow(MainWindow):
         self.bond_threshold_slider.valueChanged.connect(self.set_bond_threshold)
         self.bond_threshold_slider.valueChanged.connect(self.add_bonds)
         self.bond_threshold_slider.valueChanged.connect(self.update_bond_threshold_label)
-        self.plane_heigth_slider.valueChanged.connect(self.plane_height)
-        self.plane_heigth_slider.valueChanged.connect(self.toggle_constrain_above_plane)
 
         self.plane_height_range_slider.startValueChanged.connect(self.toggle_mag_above_plane)
         self.plane_height_range_slider.startValueChanged.connect(self.all_planes_position)
@@ -462,10 +451,6 @@ class MyMainWindow(MainWindow):
         bond_slider_layout.addWidget(self.bond_threshold_slider)
         bond_slider_layout.addWidget(self.bond_threshold_label)
 
-        plane_height_layout = QtWidgets.QHBoxLayout()
-        plane_height_layout.addWidget(self.plane_heigth_slider)
-        plane_height_layout.addWidget(self.plane_height_label)
-
         plane_opacity_layout = QtWidgets.QHBoxLayout()
         plane_opacity_layout.addWidget(self.plane_opacity_slider)
         plane_opacity_layout.addWidget(self.plane_opacity_label)
@@ -483,7 +468,6 @@ class MyMainWindow(MainWindow):
         self.vlayout.addLayout(constrain_layout)
         self.vlayout.addWidget(bonds_cb)
         self.vlayout.addWidget(plane_cb)
-        self.vlayout.addLayout(plane_height_layout)
         self.vlayout.addWidget(self.plane_height_range_slider)
         self.vlayout.addLayout(plane_opacity_layout)
         self.vlayout.addLayout(bond_slider_layout)
@@ -542,7 +526,8 @@ class MyMainWindow(MainWindow):
         
         toc = time.perf_counter()
         print(f'show application... {toc - tic}')
-
+        self.plane_height_range_slider.setStart(33)
+        self.plane_height_range_slider.setEnd(63)
         self.plotter.view_yz()
         
     def create_chgcar_data(self):
