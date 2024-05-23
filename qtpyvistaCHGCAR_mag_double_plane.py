@@ -212,9 +212,9 @@ class MyMainWindow(MainWindow):
         self.symbols = self.poscar.list_atomic_symbols()
         self.constrains = self.poscar.constrains()
         
-        #with open('elementColorSchemes.json', 'r') as file:
+        with open('elementColorSchemes.json', 'r') as file:
         #with open('/home/lnowakowski/venv/vasp-projects/view_poscar/scripts/inputs/elementColorSchemes.json', 'r') as file:
-        with open(os.path.abspath('../inputs/elementColorSchemes.json'), 'r') as file:
+        #with open(os.path.abspath('../inputs/elementColorSchemes.json'), 'r') as file:
             color_data = json.load(file)
         self.atom_colors = [color_data[self.symbols[i]] for i in range(self.number_of_atoms)]
         self.bond_threshold = 2.4
@@ -329,16 +329,16 @@ class MyMainWindow(MainWindow):
         self.geometry_value_label.setFixedWidth(150)
         self.update_geometry_value_label()
         self.end_geometry_button = QtWidgets.QPushButton()
-        self.end_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('../inputs/end.png'))
+        self.end_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('end.png')))
         self.end_geometry_button.setFixedWidth(30)
         self.start_geometry_button = QtWidgets.QPushButton()
-        self.start_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('../inputs/start.png'))
+        self.start_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('start.png')))
         self.start_geometry_button.setFixedWidth(30)
         self.next_geometry_button = QtWidgets.QPushButton()
-        self.next_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('../inputs/next.png'))
+        self.next_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('next.png')))
         self.next_geometry_button.setFixedWidth(30)
         self.back_geometry_button = QtWidgets.QPushButton()
-        self.back_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('../inputs/back.png'))
+        self.back_geometry_button.setIcon(QtGui.QIcon(os.path.abspath('back.png')))
         self.back_geometry_button.setFixedWidth(30)
 
         self.animate_button = QtWidgets.QPushButton('Animate geometry')
