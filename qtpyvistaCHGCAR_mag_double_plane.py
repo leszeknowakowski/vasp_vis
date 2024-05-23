@@ -963,4 +963,6 @@ class MyMainWindow(MainWindow):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MyMainWindow()
+    window.plane_height_range_slider.setStart(34)
+    window.plane_height_range_slider.setEnd(64)
     sys.exit(app.exec_())
