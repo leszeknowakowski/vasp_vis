@@ -74,8 +74,13 @@ from matplotlib.colors import ListedColormap
 toc = time.perf_counter()
 print(f'importing matpplotlib...{toc - tic} s')
 
-from RangeSlider import QRangeSlider
+#from RangeSlider import QRangeSlider
+#from qtrangeslider import QRangeSlider
 
+tic = time.perf_counter()
+from qtrangeslider._labeled import QLabeledRangeSlider
+toc = time.perf_counter()
+print(f'importing range slider... time: {toc-tic} s')
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=7, dpi=100):
@@ -279,15 +284,15 @@ class MyMainWindow(MainWindow):
 
         plane_cb = QtWidgets.QCheckBox(self.frame)
         plane_cb.setChecked(True)
-        plane_cb.setText('plane')
+        plane_cb.setText('bottom plane')
 
-        self.plane_height_range_slider = QRangeSlider(self.frame)
+        plane_heigher_cb = QtWidgets.QCheckBox(self.frame)
+        plane_heigher_cb.setChecked(True)
+        plane_heigher_cb.setText('top plane')
+
+        self.plane_height_range_slider = QLabeledRangeSlider(QtCore.Qt.Horizontal)
         self.plane_height_range_slider.setRange(1, 99)
-        self.plane_height_range_slider.setStart(35)
-        self.plane_height_range_slider.setEnd(60)
-        self.plane_height_range_slider.setBackgroundStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222, stop:1 #333);')
-        self.plane_height_range_slider.handle.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282, stop:1 #393);')
-
+        self.plane_height_range_slider.setValue((35, 65))
 
         self.plane_opacity_slider = QtWidgets.QSlider(self.frame)
         self.plane_opacity_slider.setOrientation(QtCore.Qt.Horizontal)
@@ -375,6 +380,7 @@ class MyMainWindow(MainWindow):
         numbers_cb.stateChanged.connect(self.toggle_symbols)
         bonds_cb.stateChanged.connect(self.toogle_bonds)
         plane_cb.stateChanged.connect(self.toggle_plane)
+        plane_heigher_cb.stateChanged.connect(self.toggle_plane_heigher)
         self.geometry_slider.valueChanged.connect(self.add_sphere)
         self.geometry_slider.valueChanged.connect(self.update_geometry_value_label)
         self.geometry_slider.valueChanged.connect(self.add_bonds)
@@ -388,13 +394,9 @@ class MyMainWindow(MainWindow):
         self.bond_threshold_slider.valueChanged.connect(self.add_bonds)
         self.bond_threshold_slider.valueChanged.connect(self.update_bond_threshold_label)
 
-        self.plane_height_range_slider.startValueChanged.connect(self.toggle_mag_above_plane)
-        self.plane_height_range_slider.startValueChanged.connect(self.all_planes_position)
-        self.plane_height_range_slider.startValueChanged.connect(self.toggle_constrain_above_plane)
-
-        self.plane_height_range_slider.endValueChanged.connect(self.toggle_mag_above_plane)
-        self.plane_height_range_slider.endValueChanged.connect(self.all_planes_position)
-        self.plane_height_range_slider.endValueChanged.connect(self.toggle_constrain_above_plane)
+        self.plane_height_range_slider.valueChanged.connect(self.toggle_mag_above_plane)
+        self.plane_height_range_slider.valueChanged.connect(self.all_planes_position)
+        self.plane_height_range_slider.valueChanged.connect(self.toggle_constrain_above_plane)
 
         self.plane_opacity_slider.valueChanged.connect(self.plane_opacity)
         self.animate_button.clicked.connect(self.animate_slider)
@@ -460,6 +462,7 @@ class MyMainWindow(MainWindow):
         chg_epsilon_layout.addWidget(self.chg_eps_slider)
 
         ############################################################################ add widgets ##########################################
+        
         self.vlayout.addWidget(sphere_cb)
         self.vlayout.addLayout(self.sphere_radius_layout)
         self.vlayout.addWidget(numbers_cb)
@@ -468,10 +471,12 @@ class MyMainWindow(MainWindow):
         self.vlayout.addLayout(constrain_layout)
         self.vlayout.addWidget(bonds_cb)
         self.vlayout.addWidget(plane_cb)
-        self.vlayout.addWidget(self.plane_height_range_slider)
+        self.vlayout.addWidget(plane_heigher_cb)
+        self.vlayout.layout().addWidget(self.plane_height_range_slider)
         self.vlayout.addLayout(plane_opacity_layout)
         self.vlayout.addLayout(bond_slider_layout)
         self.vlayout.addLayout(slider_layout)
+        
         self.vlayout.addLayout(button_layout)
         self.vlayout.addLayout(image_but_layout)
         self.vlayout.addWidget(self.add_scatter())
@@ -515,8 +520,8 @@ class MyMainWindow(MainWindow):
         toc = time.perf_counter()
         print(f'adding bonds...{toc - tic} s')
 
-        self.add_plane(self.plane_height_range_slider.getRange()[0]/100 * self.z)
-        self.add_plane_higher(self.plane_height_range_slider.getRange()[1]/100 * self.z)
+        self.add_plane(self.plane_height_range_slider.value()[0]/100 * self.z)
+        self.add_plane_higher(self.plane_height_range_slider.value()[1]/100 * self.z)
 
         self.plotter.add_key_event('z', self.camera_z)
         self.plotter.add_key_event('x', self.camera_x)
@@ -526,8 +531,6 @@ class MyMainWindow(MainWindow):
         
         toc = time.perf_counter()
         print(f'show application... {toc - tic}')
-        self.plane_height_range_slider.setStart(33)
-        self.plane_height_range_slider.setEnd(63)
         self.plotter.view_yz()
         
     def create_chgcar_data(self):
@@ -715,7 +718,6 @@ class MyMainWindow(MainWindow):
             sphere.SetRadius(self.sphere_radius)
             sphere.SetThetaResolution(30)
             sphere.SetPhiResolution(30)
-            print(coord)
             sphere.SetCenter(*coord)
 
             sphere_mapper = vtkPolyDataMapper()
@@ -725,7 +727,6 @@ class MyMainWindow(MainWindow):
             sphere_actor.GetProperty().SetColor(col[0] / 255, col[1] / 255, col[2] / 255)
             self.sphere_actors.append(sphere_actor)
             self.plotter.renderer.AddActor(sphere_actor)
-        print(self.geometry_slider.value())
         return self.sphere_actors
 
     def slide_geometry(self, value):
@@ -881,7 +882,7 @@ class MyMainWindow(MainWindow):
     def toggle_constrain_above_plane(self, flag):
         self.plotter.renderer.RemoveActor(self.constrain_actor)
         if self.constrains_cb.isChecked():
-            slidervalue = self.plane_height_range_slider.getRange()
+            slidervalue = self.plane_height_range_slider.value()
             height = slidervalue[0] / 100 * self.z
             end = slidervalue[1] / 100 * self.z
             coordinates = np.array(self.outcar_coordinates[self.geometry_slider.value()])
@@ -894,10 +895,12 @@ class MyMainWindow(MainWindow):
                 constr.append(self.constrains[indices[i]])
             self.constrain_actor = self.plotter.add_point_labels(coords, constr, font_size=30,
                                                                  show_points=False, always_visible=True, shape=None)
+            if type(flag) is tuple:
+                flag = flag[0]
             self.constrain_actor.SetVisibility(flag)
 
     def all_planes_position(self, value):
-        val = self.plane_height_range_slider.getRange()
+        val = self.plane_height_range_slider.value()
         startVal = val[0]
         endVal = val[1]
         self.plane_position = startVal
@@ -916,7 +919,7 @@ class MyMainWindow(MainWindow):
     def toggle_mag_above_plane(self, flag):
         self.plotter.renderer.RemoveActor(self.mag_actor)
         if self.mag_cb.isChecked():
-            slidervalue = self.plane_height_range_slider.getRange()
+            slidervalue = self.plane_height_range_slider.value()
             height = slidervalue[0] / 100 * self.z
             end = slidervalue[1] / 100 * self.z
 
@@ -930,6 +933,8 @@ class MyMainWindow(MainWindow):
                 magnet.append(mag[indices[i]])
             self.mag_actor = self.plotter.add_point_labels(coords, magnet, font_size=30,
                                                                  show_points=False, always_visible=True, shape=None)
+            if type(flag) is tuple:
+                flag = flag[0]
             self.mag_actor.SetVisibility(flag)
 
     def toggle_symbols(self, flag):
@@ -959,10 +964,11 @@ class MyMainWindow(MainWindow):
         """ switches on and off plane visibility"""
         self.plane_actor.GetProperty().SetOpacity(flag)
 
+    def toggle_plane_heigher(self, flag):
+        self.plane_actor_heigher.GetProperty().SetOpacity(flag)
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MyMainWindow()
-    window.plane_height_range_slider.setStart(34)
-    window.plane_height_range_slider.setEnd(64)
     sys.exit(app.exec_())
