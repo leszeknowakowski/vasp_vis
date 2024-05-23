@@ -214,7 +214,7 @@ class MyMainWindow(MainWindow):
         
         #with open('elementColorSchemes.json', 'r') as file:
         #with open('/home/lnowakowski/venv/vasp-projects/view_poscar/scripts/inputs/elementColorSchemes.json', 'r') as file:
-        with open(os.path.abspath('../inputs/elementColorSchemes.json', 'r') as file:
+        with open(os.path.abspath('../inputs/elementColorSchemes.json'), 'r') as file:
             color_data = json.load(file)
         self.atom_colors = [color_data[self.symbols[i]] for i in range(self.number_of_atoms)]
         self.bond_threshold = 2.4
