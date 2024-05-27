@@ -17,7 +17,8 @@ class OutcarParser:
         self.poscar = PoscarParser(poscar)
         self.atom_count = self.poscar.number_of_atoms()
 
-        with open(self.filename, 'r') as file:
+        #with open(self.filename, 'r') as file:
+        with open(self.filename, 'r', encoding='latin-1') as file:
             lines = file.readlines()
             lenght = len(lines)
             

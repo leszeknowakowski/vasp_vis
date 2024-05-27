@@ -111,7 +111,7 @@ class MyMainWindow(MainWindow):
         tic = time.perf_counter()
         QtWidgets.QMainWindow.__init__(self, parent)
         # create the frame and layout
-
+        self.setWindowTitle(os.getcwd())
         self.frame = QtWidgets.QFrame()
         self.frame.setMinimumSize(QtCore.QSize(1280, 720))
 
@@ -563,6 +563,7 @@ class MyMainWindow(MainWindow):
             test_vol = test_vol.swapaxes(0, 2)
             max_val = np.max(test_vol)
             min_val = np.min(test_vol)
+            contour_value = float(np.max([max_val, np.abs(min_val)]))
             pvgrid = pv.ImageData()
             pvgrid.dimensions = test_vol.shape
             pvgrid.origin = (0, 0, 0)
@@ -571,10 +572,9 @@ class MyMainWindow(MainWindow):
             self.end_geometry()
             self.plane_actor.GetProperty().SetOpacity(0)
             if self.contour_type == "spin":
-                contours = pvgrid.contour([self.eps * min_val, self.eps * max_val])
+                contours = pvgrid.contour([- self.eps * contour_value, self.eps * contour_value])
             else:
-                contours = pvgrid.contour([self.eps*max_val])
-                
+                contours = pvgrid.contour([self.eps*contour_value])
             colors = pv.LookupTable()
             colors.scalar_range = (self.eps * min_val, self.eps * max_val)
             lightblue = np.array([0/256,255/256,254/256, 1.0])
