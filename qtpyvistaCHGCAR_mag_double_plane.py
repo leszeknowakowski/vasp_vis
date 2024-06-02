@@ -258,9 +258,9 @@ class MyMainWindow(MainWindow):
         self.sphere_radius_slider.setValue(5)
         self.sphere_radius_slider.setFixedWidth(200)
 
-        numbers_cb = QtWidgets.QCheckBox(self.frame)
-        numbers_cb.setChecked(False)
-        numbers_cb.setText('numbers')
+        self.numbers_cb = QtWidgets.QCheckBox(self.frame)
+        self.numbers_cb.setChecked(False)
+        self.numbers_cb.setText('numbers')
 
         self.mag_cb = QtWidgets.QCheckBox(self.frame)
         self.mag_cb.setChecked(False)
@@ -377,7 +377,7 @@ class MyMainWindow(MainWindow):
         self.constrains_cb.stateChanged.connect(self.toggle_constrain_above_plane)
         self.constrains_all_cb.stateChanged.connect(self.toggle_constrain)
         self.mag_cb.stateChanged.connect(self.toggle_mag_above_plane)
-        numbers_cb.stateChanged.connect(self.toggle_symbols)
+        self.numbers_cb.stateChanged.connect(self.add_symbol_and_number)
         bonds_cb.stateChanged.connect(self.toogle_bonds)
         plane_cb.stateChanged.connect(self.toggle_plane)
         plane_heigher_cb.stateChanged.connect(self.toggle_plane_heigher)
@@ -397,6 +397,7 @@ class MyMainWindow(MainWindow):
         self.plane_height_range_slider.valueChanged.connect(self.toggle_mag_above_plane)
         self.plane_height_range_slider.valueChanged.connect(self.all_planes_position)
         self.plane_height_range_slider.valueChanged.connect(self.toggle_constrain_above_plane)
+        self.plane_height_range_slider.valueChanged.connect(self.add_symbol_and_number)
 
         self.plane_opacity_slider.valueChanged.connect(self.plane_opacity)
         self.animate_button.clicked.connect(self.animate_slider)
@@ -465,7 +466,7 @@ class MyMainWindow(MainWindow):
         
         self.vlayout.addWidget(sphere_cb)
         self.vlayout.addLayout(self.sphere_radius_layout)
-        self.vlayout.addWidget(numbers_cb)
+        self.vlayout.addWidget(self.numbers_cb)
         self.vlayout.addWidget(unit_cell_cb)
         self.vlayout.addWidget(self.mag_cb)
         self.vlayout.addLayout(constrain_layout)
@@ -511,7 +512,7 @@ class MyMainWindow(MainWindow):
         print(f'adding constrains... {toc - tic}')
 
         tic = time.perf_counter()
-        self.add_symbol_and_number()
+        #self.add_symbol_and_number()
         toc = time.perf_counter()
         print(f'adding symbols... {toc - tic}')
 
@@ -854,15 +855,28 @@ class MyMainWindow(MainWindow):
                                                              show_points=False, always_visible=True, shape=None)
         self.constrain_actor.SetVisibility(False)
 
-    def add_symbol_and_number(self):
+    def add_symbol_and_number(self, flag):
         """ renders an atom symbol and number"""
         self.plotter.renderer.RemoveActor(self.symb_actor)
-        coordinates = self.outcar_coordinates[self.geometry_slider.value()]
-        symb_num = self.poscar.symbol_and_number()
-        coords = list(np.array(coordinates) + [0, -0.2, 0.5])
-        self.symb_actor = self.plotter.add_point_labels(coords, symb_num, font_size=30, show_points=False,
-                                                        always_visible=False, shape=None)
-        self.symb_actor.SetVisibility(False)
+        if self.numbers_cb.isChecked():
+            slidervalue = self.plane_height_range_slider.value()
+            height = slidervalue[0] / 100 * self.z
+            end = slidervalue[1] / 100 * self.z
+
+            coordinates = np.array(self.outcar_coordinates[self.geometry_slider.value()])
+            symb_num = self.poscar.symbol_and_number()
+            coords = []
+            numbers=[]
+            indices = list(np.where((coordinates[:, 2] > height) & (coordinates[:,2] < end))[0])
+            #coords = list(np.array(coordinates) + [0, -0.2, 0.5])
+            for i in range(len(indices)):
+                coords.append(list(coordinates[indices[i]]))
+                numbers.append(symb_num[indices[i]])
+            self.symb_actor = self.plotter.add_point_labels(coords, numbers, font_size=30, show_points=False,
+                                                            always_visible=True, shape=None)
+            if type(flag) is tuple:
+                flag = flag[0]
+            self.symb_actor.SetVisibility(flag)
 
     def toggle_spheres(self, flag):
         """switches on and off spheres visibility"""
