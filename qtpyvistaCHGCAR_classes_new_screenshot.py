@@ -75,6 +75,7 @@ toc = time.perf_counter()
 print(f'importing matpplotlib...{toc - tic} s')
 
 from RangeSlider import QRangeSlider
+import pathlib
 
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -211,8 +212,9 @@ class MyMainWindow(MainWindow):
         self.number_of_atoms = len(self.coordinates)
         self.symbols = self.poscar.list_atomic_symbols()
         self.constrains = self.poscar.constrains()
-        
-        with open('elementColorSchemes.json', 'r') as file:
+
+        script_dir = pathlib.Path(__file__).parent.resolve()
+        with open(os.path.join(script_dir, 'elementColorSchemes.json'), 'r') as file:
             color_data = json.load(file)
         self.atom_colors = [color_data[self.symbols[i]] for i in range(self.number_of_atoms)]
         self.bond_threshold = 2.4
