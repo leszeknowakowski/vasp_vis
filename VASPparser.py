@@ -28,7 +28,7 @@ class OutcarParser:
                         position_data = line.split()
                         atom_data = [float(x) for x in position_data[:3]]
                         section_position.append(atom_data)
-                    self.positions.append([section_position])
+                    self.positions.append(section_position)
                 elif line.startswith('FREE ENERGIE'):
                     i += 2
                     energy_data = lines[i].strip().split()[4]
