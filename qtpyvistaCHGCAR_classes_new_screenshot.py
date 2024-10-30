@@ -306,9 +306,9 @@ class MyMainWindow(MainWindow):
 
         self.geometry_slider = QtWidgets.QSlider(self.frame)
         self.geometry_slider.setOrientation(QtCore.Qt.Horizontal)
-        self.geometry_slider.setMinimum(0)
+        self.geometry_slider.setMinimum(1)
         self.geometry_slider.setMaximum(len(self.outcar_coordinates) - 1)
-        self.geometry_slider.setValue(0)
+        self.geometry_slider.setValue(1)
         self.geometry_slider.setTickInterval(1)
         self.geometry_slider.setSingleStep(1)
         self.geometry_slider.setFixedWidth(200)
@@ -660,8 +660,8 @@ class MyMainWindow(MainWindow):
         self.vlayout.removeWidget(self.energy_plot)
         val = self.geometry_slider.value()
         self.energy_plot = MplCanvas(self, width=3, height=3, dpi=100)
-        self.energy_plot.axes.plot(self.outcar_energies)
-        self.energy_plot.axes.scatter(val, self.outcar_energies[val])
+        self.energy_plot.axes.plot(range(1, len(self.outcar_energies)+1),self.outcar_energies)
+        self.energy_plot.axes.scatter(val, self.outcar_energies[val-1])
         self.vlayout.addWidget(self.energy_plot)
         return self.energy_plot
 
