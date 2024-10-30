@@ -1,0 +1,60 @@
+ SYSTEM =  Co3O4
+
+ Startparameter for this Run:
+   NWRITE = 2
+   ISTART = 1
+   PREC   = Acc
+#   GGA    = PE
+#   NCORE = 7
+Hybrid functional
+  LHFCALC  = .TRUE.
+  HFSCREEN = 0.2 
+  ALGO     = None
+  TIME     = 0.2
+
+
+ Electronic Relaxation
+#   ALGO  = Fast     algorithm
+   LDIAG  = F    sub-space diagonalisation
+   LREAL  = A    real-space projection
+   ENINI  = 250
+   ENCUT  = 500
+   NELMIN = 6
+   NELM   = 60
+   ISPIN  = 2
+   EDIFF  = 1E-5
+   EDIFFG = 1E-5
+
+   LMAXMIX = 4
+
+Mixer
+  AMIX     = 0.02
+  BMIX     = 0.001
+  AMIX_MAG = 0.08
+  BMIX_MAG = 0.001 
+
+ #  LDAU   =  TRUE
+ #  LDAUTYPE = 2
+ #  LDAUL = -1 2
+ #  LDAUU = 0.0 3.0  3.0
+ #  LDAUJ =  0.0 0.0 0.0
+ #  LDAUPRINT = 2
+
+    MAGMOM = 66*0.0  8*-3.75  8*3.75   32*0.0
+
+
+ DOS related values:
+   ISMEAR =      0
+   SIGMA  =      0.001
+   LORBIT =      11
+NBANDS = 780
+NEDOS = 4000
+ Ionic Relaxation
+
+   IBRION = -1
+   NSW = 0
+   ISIF = 2
+   POTIM = 0.1
+ISYM = -1
+
+
